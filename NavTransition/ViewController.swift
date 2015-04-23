@@ -1,0 +1,68 @@
+//
+//  ViewController.swift
+//  NavTransition
+//
+//  Created by Simon Ng on 1/2/15.
+//  Copyright (c) 2015 AppCoda. All rights reserved.
+//
+
+import UIKit
+
+class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+    var transitionImages = ["Doodle Icons-41", "Doodle Icons-42", "Doodle Icons-43", "Doodle Icons-44"]
+    var transitions = ["Slide Down", "Slide Right", "Pop", "Rotate"]
+    var slideDownTransition = SlideDownTransitionAnimator()
+    
+    @IBOutlet weak var collectionView:UICollectionView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let toViewController = segue.destinationViewController as! UIViewController
+        let sourceViewController = segue.sourceViewController as! ViewController
+        
+        let selectedIndexPaths = sourceViewController.collectionView.indexPathsForSelectedItems() as! [NSIndexPath]
+        
+        switch selectedIndexPaths[0].row {
+            case 0:
+                toViewController.transitioningDelegate = slideDownTransition
+            default:
+                break
+        }
+    }
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return transitionImages.count
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        var cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath) as! CustomCell
+        
+        cell.thumbnailImageView.image = UIImage(named: transitionImages[indexPath.row])
+        cell.titleLabel.text = transitions[indexPath.row]
+        
+        return cell
+        
+    }
+
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+        let width = (traitCollection.horizontalSizeClass == .Compact && traitCollection.verticalSizeClass == .Regular) ? 80.0 : 100.0
+        let height = (traitCollection.horizontalSizeClass == .Compact && traitCollection.verticalSizeClass == .Regular) ? 105.0: 130.0
+        return CGSize(width: width, height: height)
+    }
+    
+    override func viewWillTransitionToSize(size: CGSize,
+        withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+            collectionView.reloadData()
+    }
+
+}
+
